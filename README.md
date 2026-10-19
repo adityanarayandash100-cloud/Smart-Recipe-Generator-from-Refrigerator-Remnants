@@ -72,8 +72,7 @@ smart-fridge-recipe-finder/
 
 1. Clone or Download the Repository
 
-git clone https://github.com/your-username/smart-fridge-recipe-finder.git
-cd smart-fridge-recipe-finder
+git clone https://adityanarayandash100-cloud.github.io/Smart-Recipe-Generator-from-Refrigerator-Remnants/
 
 
 2. Run the Application
