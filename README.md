@@ -1,134 +1,54 @@
-🍳 Smart Fridge Recipe Finder
-
-Transform pantry remnants and leftover ingredients into everyday meals — built with pure, beginner-friendly HTML, CSS, and Vanilla JavaScript with zero external dependencies and no AI APIs required.
-
-📌 Project Overview
-
-Smart Fridge Recipe Finder is a client-side web application designed to solve household food waste and end-of-day cooking fatigue. Instead of guessing what to cook with leftover ingredients, users select or search the items currently available in their kitchen.
-
-The application runs a lightweight client-side set intersection algorithm to score, rank, and display recipes from highest match percentage to lowest, highlighting missing ingredients for quick grocery planning.
-
-✨ Features
-
-Dynamic Inventory Grid: Categorized selection across dairy, vegetables, staples, dals, and condiments.
-
-Set-Intersection Matching Engine: Calculates exact ingredient overlap percentages:
+ https://adityanarayandash100-cloud.github.io/Smart-Recipe-Generator-from-Refrigerator-Remnants/
 
 
-$$\text{Match Percentage} = \left(\frac{\vert{}\text{User Ingredients} \cap \text{Recipe Ingredients}\vert{}}{\vert{}\text{Recipe Ingredients}\vert{}}\right) \times 100$$
+# 🍳 Smart Fridge Recipe Finder
 
-Instant Search Filter: Real-time search to quickly pinpoint ingredients across 35+ inventory items without endless scrolling.
+> Zero-dependency, client-side web application that matches leftover ingredients in your kitchen against everyday homestyle recipes to reduce food waste.
 
-Color-Coded Status Cards:
+![Status](https://img.shields.io/badge/status-active-success.svg)
+![Tech Stack](https://img.shields.io/badge/tech-HTML5%20%7C%20CSS3%20%7C%20Vanilla%20JS-blue)
+![Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-🟢 100% Match: "Ready to Cook" (Zero extra groceries needed).
+---
 
-🟠 Partial Match: Clearly lists what you have versus what you still need to purchase.
+## 📌 Overview
 
-Select All / Clear All Controls: Fast one-click pantry state resets.
+**Smart Fridge Recipe Finder** is built to solve everyday kitchen friction: standing in front of the refrigerator with mismatched items and no clear idea of what to cook. 
 
-Dietary Preferences Filter: Sort results seamlessly by Vegetarian, Non-Vegetarian, or Vegan.
+Instead of relying on heavy third-party APIs or server setups, it runs on an efficient, pure JavaScript set-intersection algorithm directly in the user's browser. Everything—structure, layout styling, dataset, and logic—lives inside a single, zero-dependency `index.html` file.
 
-Persistent State: Remembers checked ingredients across page reloads using browser localStorage.
+---
 
-Zero Build Tools: No Node.js, Webpack, or framework installations required. Double-click and run in any browser.
+## ✨ Features
 
-🛠️ Tech Stack
+- **⚡ Instant In-Memory Matching:** Evaluates 25+ built-in recipes against pantry selections in real time.
+- **📊 Match Compatibility Scoring:** Ranks recipes by compatibility percentage, distinguishing between 100% full matches and partial options.
+- **🔍 Real-Time Ingredient Search:** Live keyword filtering across 35+ kitchen essentials (dairy, aromatics, grains, and pantry staples).
+- **🛒 Clear Ingredient Breakdown:** Displays distinct visual cues for items already on hand versus missing ingredients needed from the store.
+- **⚡ Bulk Controls:** One-click **Select All** and **Clear** utility buttons for rapid pantry resets.
+- **📱 Fully Responsive:** Clean, mobile-friendly interface designed for touchscreens and kitchen counters.
+- **🚀 Single-File Architecture:** Zero bundlers, zero external script dependencies, and zero build steps required.
 
-Component
+---
 
-Technology
+## 🧠 How the Matching Algorithm Works
 
-Purpose
+The application avoids complex AI models in favor of a deterministic, transparent formula:
 
-Structure
+$$\text{Match Percentage} = \left( \frac{\vert{}\text{User Ingredients} \cap \text{Recipe Ingredients}\vert{}}{\vert{}\text{Recipe Ingredients}\vert{}} \right) \times 100$$
 
-HTML5
+1. **Extraction:** Selected checkboxes are converted into a normalized, lowercase array.
+2. **Intersection (`.filter()`):** The engine computes two distinct lists for each recipe:
+   - **`matched`**: Ingredients available in the pantry.
+   - **`missing`**: Ingredients required by the recipe but unselected.
+3. **Sorting:** Recipes with at least one matching item are sorted descending by score so that **100% "Ready to Cook"** meals appear at the top.
 
-Accessible, semantic document layout
+---
 
-Styling
+## 📂 Project Structure
 
-CSS3
-
-Responsive grid layout, status cards, and badge indicators
-
-Logic
-
-Vanilla JavaScript (ES6+)
-
-DOM rendering, real-time filtering, array math, and storage
-
-📂 Project Structure
-
+```text
 smart-fridge-recipe-finder/
-├── index.html       # Application interface and input controls
-├── styles.css       # Clean, modern responsive styling (optional if separate)
-├── script.js        # Recipe dataset and matching algorithm
-└── README.md        # Documentation and setup guide
-
-
-🚀 Getting Started
-
-1. Clone or Download the Repository
-
-git clone https://adityanarayandash100-cloud.github.io/Smart-Recipe-Generator-from-Refrigerator-Remnants/
-
-
-2. Run the Application
-
-No server or build setup is required. Open index.html directly:
-
-Windows: Double-click index.html or open via Microsoft Edge / Chrome.
-
-macOS: Double-click or run open index.html in Terminal.
-
-Linux: Run xdg-open index.html.
-
-(Alternatively, use the VS Code extension Live Server to preview with auto-reload.)
-
-💡 How the Matching Logic Works
-
-State Gathering: Collects all checked items into an array of lowercase strings:
-
-const userIngredients = ["paneer", "onion", "butter"];
-
-
-Intersection Evaluation: For each recipe object, JavaScript compares arrays:
-
-const matched = recipe.ingredients.filter(item => userIngredients.includes(item));
-const missing = recipe.ingredients.filter(item => !userIngredients.includes(item));
-const matchScore = Math.round((matched.length / recipe.ingredients.length) * 100);
-
-
-Sorting & Rendering: Sorts recipes descending by matchScore and injects styled HTML cards dynamically into #resultsArea.
-
-📖 Adding New Recipes
-
-To expand the cookbook, open script.js and append an object to the recipes array:
-
-{
-  name: "Your Custom Dish Name",
-  category: "Veg", // or "Non-Veg"
-  ingredients: ["ingredient1", "ingredient2", "ingredient3"],
-  steps: "Brief 1-2 sentence preparation instruction."
-}
-
-
-🤝 Contributing
-
-Contributions are welcome! If you would like to contribute:
-
-Fork the project.
-
-Create your feature branch (git checkout -b feature/NewRecipes).
-
-Commit your changes (git commit -m 'Add 5 breakfast recipes').
-
-Push to the branch (git push origin feature/NewRecipes).
-
-Open a Pull Request.
-
-📄 License
-
-This project is open-source and available under the MIT License.
+├── index.html       # Combined markup, CSS styling, dataset, and matching engine
+└── README.md        # Documentation and usage guide
