@@ -1,90 +1,537 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Fridge Recipe Finder</title>
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 0 15px;
-      background-color: #f7f9fa;
-      color: #333;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f4f6f8;
+      color: #2c3e50;
+      line-height: 1.5;
+      padding: 24px 16px;
     }
-    h1 { text-align: center; color: #2c3e50; }
-    .box {
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      font-size: 28px;
+      color: #1a252f;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: #7f8c8d;
+      font-size: 15px;
+    }
+
+    .card {
       background: #ffffff;
+      border-radius: 10px;
       padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
     }
+
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 10px 14px;
+      border: 1px solid #dcdde1;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: #27ae60;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-small {
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #ecf0f1;
+      color: #2c3e50;
+      transition: background 0.2s;
+    }
+
+    .btn-small:hover {
+      background: #bdc3c7;
+    }
+
     .ingredient-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 10px;
-      margin: 15px 0;
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 8px 4px;
+      border: 1px solid #f1f2f6;
+      border-radius: 6px;
+      margin-bottom: 18px;
     }
+
     .ingredient-item {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       font-size: 14px;
-    }
-    button {
-      background-color: #27ae60;
-      color: white;
-      border: none;
-      padding: 10px 18px;
-      font-size: 16px;
+      background: #f8f9fa;
+      padding: 8px 10px;
       border-radius: 6px;
       cursor: pointer;
+      user-select: none;
+      transition: background 0.15s;
+    }
+
+    .ingredient-item:hover {
+      background: #e9ecef;
+    }
+
+    .ingredient-item input {
+      accent-color: #27ae60;
+      cursor: pointer;
+    }
+
+    .btn-submit {
       display: block;
-      margin: 0 auto;
+      width: 100%;
+      background-color: #27ae60;
+      color: #ffffff;
+      border: none;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.2s, transform 0.1s;
     }
-    button:hover { background-color: #219150; }
+
+    .btn-submit:hover {
+      background-color: #219150;
+    }
+
+    .btn-submit:active {
+      transform: scale(0.99);
+    }
+
     .recipe-card {
-      background: white;
-      padding: 15px;
+      background: #ffffff;
       border-radius: 8px;
-      margin-bottom: 15px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
       border-left: 6px solid #bdc3c7;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
-    .perfect-match { border-left-color: #27ae60; }
-    .partial-match { border-left-color: #f39c12; }
+
+    .perfect-match {
+      border-left-color: #27ae60;
+    }
+
+    .partial-match {
+      border-left-color: #f39c12;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .card-header h3 {
+      font-size: 18px;
+      color: #2c3e50;
+    }
+
     .badge {
       display: inline-block;
-      padding: 4px 8px;
-      border-radius: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
       font-size: 12px;
-      font-weight: bold;
-      color: white;
+      font-weight: 700;
+      color: #ffffff;
     }
-    .badge-green { background-color: #27ae60; }
-    .badge-orange { background-color: #f39c12; }
-    .tag-have { color: #27ae60; font-weight: bold; }
-    .tag-missing { color: #c0392b; font-weight: bold; }
+
+    .badge-green {
+      background-color: #27ae60;
+    }
+
+    .badge-orange {
+      background-color: #e67e22;
+    }
+
+    .tag-have {
+      color: #27ae60;
+      font-weight: 600;
+    }
+
+    .tag-missing {
+      color: #c0392b;
+      font-weight: 600;
+    }
+
+    .instructions-box {
+      background-color: #f8f9fa;
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 14px;
+      color: #495057;
+      border-left: 3px solid #ced4da;
+    }
+
+    .status-msg {
+      text-align: center;
+      padding: 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      background: #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .error-msg {
+      color: #c0392b;
+      background: #fdf2f2;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Smart Fridge Recipe Finder</h1>
+  <div class="container">
+    <header>
+      <h1>Smart Fridge Recipe Finder</h1>
+      <p>Select what is in your kitchen to find what you can cook right now.</p>
+    </header>
 
-  <div class="box">
-    <h3>1. What do you have in your kitchen right now?</h3>
-    <div class="ingredient-grid" id="ingredientList">
-      <!-- Generated by JavaScript -->
+    <div class="card">
+      <div class="controls-row">
+        <input 
+          type="text" 
+          id="searchBar" 
+          class="search-input" 
+          placeholder="🔍 Search ingredients (e.g. paneer, butter)..." 
+          onkeyup="filterIngredients()" 
+        />
+        <div class="btn-group">
+          <button type="button" class="btn-small" onclick="toggleAll(true)">Select All</button>
+          <button type="button" class="btn-small" onclick="toggleAll(false)">Clear</button>
+        </div>
+      </div>
+
+      <div class="ingredient-grid" id="ingredientList"></div>
+
+      <button type="button" class="btn-submit" onclick="findRecipes()">Find Recipes</button>
     </div>
-    <button onclick="findRecipes()">Find Recipes</button>
+
+    <div id="resultsArea"></div>
   </div>
 
-  <div id="resultsArea">
-    <!-- Matched Recipes will appear here -->
-  </div>
+  <script>
+    /* ==========================================
+       DATA & APPLICATION LOGIC
+       ========================================== */
 
-  <script src="script.js"></script>
+    const pantryInventory = [
+      "paneer", "egg", "milk", "curd (yogurt)", "butter", "cheese", "tofu",
+      "onion", "tomato", "potato", "garlic", "ginger", "green chili", 
+      "capsicum (bell pepper)", "carrot", "green peas", "spinach (palak)", 
+      "cucumber", "sweet corn", "mushroom", "cabbage", "lemon", "coriander",
+      "cooked rice", "bread", "besan (gram flour)", "maggi noodles", 
+      "pasta", "rolled oats", "atta (wheat flour)", "poha (flattened rice)",
+      "yellow moong dal", "toor dal", "boiled chickpeas (chole)",
+      "cooking oil", "soy sauce", "tomato ketchup", "mayonnaise", "honey", "peanuts"
+    ];
+
+    const recipes = [
+      {
+        name: "Classic Paneer Bhurji",
+        ingredients: ["paneer", "onion", "tomato", "green chili", "butter"],
+        steps: "Sauté onions, tomatoes, and chilies in butter. Crumble paneer into the pan and toss for 4-5 minutes."
+      },
+      {
+        name: "Crispy Sweet Corn Chaat",
+        ingredients: ["sweet corn", "butter", "onion", "tomato", "lemon", "coriander"],
+        steps: "Boil or pan-sear sweet corn in butter. Toss with diced onions, tomatoes, fresh coriander, and lemon juice."
+      },
+      {
+        name: "Besan Chilla (Gram Flour Pancake)",
+        ingredients: ["besan (gram flour)", "onion", "tomato", "green chili", "coriander"],
+        steps: "Whisk besan with water, finely chopped vegetables, and salt into a batter. Pour onto a greased pan and cook both sides until golden."
+      },
+      {
+        name: "Garlic Butter Fried Rice",
+        ingredients: ["cooked rice", "garlic", "butter", "onion", "soy sauce"],
+        steps: "Sauté plenty of minced garlic and sliced onions in butter until golden. Add cold cooked rice and a splash of soy sauce, tossing on high heat."
+      },
+      {
+        name: "Egg Fried Rice",
+        ingredients: ["cooked rice", "egg", "onion", "garlic", "cooking oil", "soy sauce"],
+        steps: "Scramble eggs in hot oil and set aside. Sauté garlic and onions, add rice and soy sauce, then fold in the scrambled eggs."
+      },
+      {
+        name: "Masala Egg Scramble (Bhurji)",
+        ingredients: ["egg", "onion", "tomato", "green chili", "butter", "coriander"],
+        steps: "Sauté onions, tomatoes, and chilies in butter. Pour in beaten eggs and stir continuously until soft curds form. Garnish with coriander."
+      },
+      {
+        name: "Veggie Masala Maggi",
+        ingredients: ["maggi noodles", "onion", "tomato", "green peas", "butter"],
+        steps: "Sauté onions, tomatoes, and peas in butter with the tastemaker. Add water, drop in noodle cakes, and simmer until cooked."
+      },
+      {
+        name: "Homestyle Aloo Fry",
+        ingredients: ["potato", "onion", "green chili", "cooking oil"],
+        steps: "Dice potatoes small. Fry sliced onions and chilies in oil, add potatoes, cover, and roast on medium flame until crispy and tender."
+      },
+      {
+        name: "Classic French Toast",
+        ingredients: ["bread", "egg", "milk", "butter"],
+        steps: "Whisk egg and a splash of milk together. Dip bread slices briefly into the batter and fry in butter until both sides are lightly browned."
+      },
+      {
+        name: "Cheese Chili Toast",
+        ingredients: ["bread", "cheese", "green chili", "capsicum (bell pepper)", "butter"],
+        steps: "Butter bread slices, top with grated cheese, minced chilies, and capsicum. Toast on a covered tawa or in an oven until cheese melts."
+      },
+      {
+        name: "Quick Curd Rice",
+        ingredients: ["cooked rice", "curd (yogurt)", "green chili", "ginger", "cucumber"],
+        steps: "Mash soft cooked rice, mix thoroughly with fresh curd, grated ginger, chopped chilies, diced cucumber, and a pinch of salt."
+      },
+      {
+        name: "Kanda Poha",
+        ingredients: ["poha (flattened rice)", "onion", "potato", "peanuts", "green chili", "lemon"],
+        steps: "Rinse poha and drain. Fry peanuts and diced potatoes in oil until crisp, add onions and chilies, fold in poha, and finish with lemon."
+      },
+      {
+        name: "Garlic Butter Sautéed Mushrooms",
+        ingredients: ["mushroom", "garlic", "butter", "cooking oil"],
+        steps: "Slice mushrooms. Heat butter and a drop of oil, sauté minced garlic, toss in mushrooms on high heat until browned and tender."
+      },
+      {
+        name: "Boiled Chole Chaat",
+        ingredients: ["boiled chickpeas (chole)", "onion", "tomato", "green chili", "lemon", "coriander"],
+        steps: "Toss boiled chickpeas with chopped onions, tomatoes, green chilies, coriander, salt, and generous lemon juice."
+      },
+      {
+        name: "Simple Dal Tadka",
+        ingredients: ["yellow moong dal", "onion", "tomato", "garlic", "cooking oil"],
+        steps: "Boil dal with water and salt until soft. In a separate pan, heat oil, fry garlic, onions, and tomatoes, then pour the tadka over the dal."
+      },
+      {
+        name: "Creamy Tomato Garlic Pasta",
+        ingredients: ["pasta", "tomato", "garlic", "cooking oil", "cheese"],
+        steps: "Boil pasta. Sauté garlic in oil, add puréed or finely chopped tomatoes, cook down into a sauce, toss with pasta, and finish with grated cheese."
+      },
+      {
+        name: "Sweet Corn & Capsicum Stir-Fry",
+        ingredients: ["sweet corn", "capsicum (bell pepper)", "onion", "butter", "garlic"],
+        steps: "Melt butter, sauté minced garlic and onions, add diced capsicum and corn, and stir-fry on high flame for 3-4 minutes to keep crunch."
+      },
+      {
+        name: "Aloo Pyaz Paratha",
+        ingredients: ["atta (wheat flour)", "potato", "onion", "green chili", "cooking oil"],
+        steps: "Knead atta into dough. Mash boiled potatoes with finely minced onion, green chili, and salt. Stuff dough balls, roll flat, and roast with oil."
+      },
+      {
+        name: "Stir-Fried Soy Cabbage & Carrot",
+        ingredients: ["cabbage", "carrot", "garlic", "cooking oil", "soy sauce"],
+        steps: "Shred cabbage and carrots. Heat oil, fry garlic, toss the vegetables on high heat for 3 minutes, and stir in soy sauce."
+      },
+      {
+        name: "Savory Vegetable Oats",
+        ingredients: ["rolled oats", "onion", "tomato", "green peas", "carrot", "cooking oil"],
+        steps: "Sauté onions, tomatoes, carrots, and peas in oil. Add water and rolled oats, simmer for 4-5 minutes until thick and cooked."
+      },
+      {
+        name: "Pan-Seared Crispy Tofu",
+        ingredients: ["tofu", "garlic", "soy sauce", "cooking oil", "green chili"],
+        steps: "Press and cube tofu. Pan-fry in oil until golden on all sides. Toss with minced garlic, chili, and a splash of soy sauce."
+      },
+      {
+        name: "Cucumber Tomato Salad",
+        ingredients: ["cucumber", "tomato", "onion", "lemon", "coriander"],
+        steps: "Dice cucumber, tomatoes, and onions. Toss together with chopped coriander, salt, and freshly squeezed lemon juice."
+      },
+      {
+        name: "Mayonnaise Veggie Sandwich",
+        ingredients: ["bread", "mayonnaise", "cucumber", "tomato", "capsicum (bell pepper)"],
+        steps: "Finely chop cucumber, tomato, and capsicum. Mix with mayonnaise and salt, spread between bread slices, and serve fresh or toasted."
+      },
+      {
+        name: "Aloo Palak Sabzi",
+        ingredients: ["spinach (palak)", "potato", "onion", "garlic", "cooking oil"],
+        steps: "Fry cubed potatoes in oil until cooked. Sauté garlic and onions, add washed chopped spinach, fold in the cooked potatoes, and cook until dry."
+      },
+      {
+        name: "Egg Drop Noodle Soup",
+        ingredients: ["maggi noodles", "egg", "garlic", "green chili", "soy sauce"],
+        steps: "Boil water with tastemaker, garlic, chili, and noodles. In the final minute, slowly stream in a beaten egg while gently stirring the broth."
+      }
+    ];
+
+    // Populate the checkbox list
+    function initializePantryUI() {
+      const container = document.getElementById("ingredientList");
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      pantryInventory.forEach((item, index) => {
+        const itemWrapper = document.createElement("label");
+        itemWrapper.className = "ingredient-item";
+
+        const inputId = `item-${index}`;
+
+        itemWrapper.innerHTML = `
+          <input type="checkbox" id="${inputId}" value="${item}">
+          <span>${item.charAt(0).toUpperCase() + item.slice(1)}</span>
+        `;
+
+        container.appendChild(itemWrapper);
+      });
+    }
+
+    // Filter list on search typing
+    function filterIngredients() {
+      const query = document.getElementById("searchBar").value.toLowerCase();
+      const items = document.querySelectorAll("#ingredientList .ingredient-item");
+
+      items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(query) ? "flex" : "none";
+      });
+    }
+
+    // Toggle all checkboxes
+    function toggleAll(status) {
+      const checkboxes = document.querySelectorAll("#ingredientList input[type='checkbox']");
+      checkboxes.forEach(cb => cb.checked = status);
+    }
+
+    // Matching Algorithm
+    function findRecipes() {
+      const checkedBoxes = document.querySelectorAll("#ingredientList input:checked");
+      const userIngredients = Array.from(checkedBoxes).map(cb => cb.value.toLowerCase());
+      const resultsArea = document.getElementById("resultsArea");
+
+      if (!resultsArea) return;
+      resultsArea.innerHTML = "";
+
+      if (userIngredients.length === 0) {
+        resultsArea.innerHTML = `
+          <div class="status-msg error-msg">
+            ⚠️ Please check at least one ingredient you have available!
+          </div>
+        `;
+        return;
+      }
+
+      const evaluatedRecipes = recipes.map(recipe => {
+        const matched = recipe.ingredients.filter(ing => userIngredients.includes(ing.toLowerCase()));
+        const missing = recipe.ingredients.filter(ing => !userIngredients.includes(ing.toLowerCase()));
+        const matchPercentage = Math.round((matched.length / recipe.ingredients.length) * 100);
+
+        return {
+          name: recipe.name,
+          steps: recipe.steps,
+          matched: matched,
+          missing: missing,
+          matchPercentage: matchPercentage
+        };
+      });
+
+      const sortedMatches = evaluatedRecipes
+        .filter(r => r.matched.length > 0)
+        .sort((a, b) => b.matchPercentage - a.matchPercentage);
+
+      if (sortedMatches.length === 0) {
+        resultsArea.innerHTML = `
+          <div class="status-msg">
+            No recipes matched those specific items. Try checking a few pantry staples!
+          </div>
+        `;
+        return;
+      }
+
+      sortedMatches.forEach(recipe => {
+        const isFullMatch = recipe.missing.length === 0;
+        const card = document.createElement("div");
+        card.className = isFullMatch ? "recipe-card perfect-match" : "recipe-card partial-match";
+        const badgeClass = isFullMatch ? "badge-green" : "badge-orange";
+        const badgeText = isFullMatch ? "Ready to Cook (100% Match)" : `${recipe.matchPercentage}% Match`;
+
+        card.innerHTML = `
+          <div class="card-header">
+            <h3>${recipe.name}</h3>
+            <span class="badge ${badgeClass}">${badgeText}</span>
+          </div>
+
+          <p style="margin: 6px 0; font-size: 14px;">
+            <span class="tag-have">✓ You have:</span> ${recipe.matched.join(", ")}
+          </p>
+
+          ${
+            isFullMatch 
+              ? `<p style="margin: 6px 0; font-size: 14px; color: #27ae60; font-weight: bold;">
+                   ✓ All ingredients ready in your kitchen!
+                 </p>` 
+              : `<p style="margin: 6px 0; font-size: 14px;">
+                   <span class="tag-missing">✕ Missing:</span> ${recipe.missing.join(", ")}
+                 </p>`
+          }
+
+          <div class="instructions-box">
+            <strong>Instructions:</strong> ${recipe.steps}
+          </div>
+        `;
+
+        resultsArea.appendChild(card);
+      });
+    }
+
+    // Initialize list when the document is parsed
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initializePantryUI);
+    } else {
+      initializePantryUI();
+    }
+  </script>
 </body>
 </html>
